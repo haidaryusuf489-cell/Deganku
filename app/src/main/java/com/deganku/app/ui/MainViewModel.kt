@@ -30,13 +30,25 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _cart = MutableStateFlow<List<CartItem>>(emptyList())
     val cart: StateFlow<List<CartItem>> = _cart.asStateFlow()
 
+    private val _salesTotal = MutableStateFlow(0L)
+    val salesTotal: StateFlow<Long> = _salesTotal.asStateFlow()
+
     init {
         viewModelScope.launch {
             if (db.userDao().first() == null) {
                 val (salt, hash) = PinSecurity.create("1234")
-                db.userDao().upsert(UserEntity(id = 1L, name = "Owner", role = "OWNER", pinSalt = salt, pinHash = hash))
+                db.userDao().upsert(
+                    UserEntity(
+                        id = 1L,
+                        name = "Owner",
+                        role = "OWNER",
+                        pinSalt = salt,
+                        pinHash = hash
+                    )
+                )
                 seedProducts()
             }
+            refreshSalesTotal()
         }
     }
 
@@ -102,11 +114,24 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             _cart.value = emptyList()
+            refreshSalesTotal()
         }
     }
 
-    fun totalSalesValue(): Long {
-        return 0L
+    fun refreshSalesTotal() = viewModelScope.launch {
+        val from = startOfDayMillis()
+        val to = from + 86_400_000L
+        _salesTotal.value = db.saleDao().revenue(from, to)
+    }
+
+    private fun startOfDayMillis(): Long {
+        val now = System.currentTimeMillis()
+        val day = java.util.Calendar.getInstance().apply { timeInMillis = now }
+        day.set(java.util.Calendar.HOUR_OF_DAY, 0)
+        day.set(java.util.Calendar.MINUTE, 0)
+        day.set(java.util.Calendar.SECOND, 0)
+        day.set(java.util.Calendar.MILLISECOND, 0)
+        return day.timeInMillis
     }
 
     fun seedProducts() = viewModelScope.launch {

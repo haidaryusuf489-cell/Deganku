@@ -74,30 +74,10 @@ fun MainScreen(vm: MainViewModel, user: com.deganku.app.data.UserEntity) {
     Scaffold(
         bottomBar = {
             NavigationBar {
-                NavigationBarItem(
-                    selected = tab == 0,
-                    onClick = { tab = 0 },
-                    icon = { },
-                    label = { Text("Kasir") }
-                )
-                NavigationBarItem(
-                    selected = tab == 1,
-                    onClick = { tab = 1 },
-                    icon = { },
-                    label = { Text("Stok") }
-                )
-                NavigationBarItem(
-                    selected = tab == 2,
-                    onClick = { tab = 2 },
-                    icon = { },
-                    label = { Text("Laporan") }
-                )
-                NavigationBarItem(
-                    selected = tab == 3,
-                    onClick = { tab = 3 },
-                    icon = { },
-                    label = { Text("Akun") }
-                )
+                NavigationBarItem(selected = tab == 0, onClick = { tab = 0 }, icon = { }, label = { Text("Kasir") })
+                NavigationBarItem(selected = tab == 1, onClick = { tab = 1 }, icon = { }, label = { Text("Stok") })
+                NavigationBarItem(selected = tab == 2, onClick = { tab = 2 }, icon = { }, label = { Text("Laporan") })
+                NavigationBarItem(selected = tab == 3, onClick = { tab = 3 }, icon = { }, label = { Text("Akun") })
             }
         }
     ) { padding ->
@@ -174,9 +154,7 @@ fun CashierScreen(vm: MainViewModel) {
 
 @Composable
 fun ProductCard(product: ProductEntity, onAdd: () -> Unit) {
-    Card(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
-    ) {
+    Card(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(14.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -198,10 +176,7 @@ fun StockScreen(vm: MainViewModel, role: String) {
     val coconuts by vm.coconuts.collectAsState(initial = emptyList())
     val fridge by vm.fridge.collectAsState(initial = 0)
     Column(Modifier.fillMaxSize().padding(16.dp)) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text("Stok", style = MaterialTheme.typography.headlineMedium)
             Text("Kulkas: $fridge")
         }
@@ -239,6 +214,7 @@ fun StockScreen(vm: MainViewModel, role: String) {
 
 @Composable
 fun ReportsScreen(vm: MainViewModel, role: String) {
+    val salesTotal by vm.salesTotal.collectAsState(initial = 0L)
     Column(Modifier.fillMaxSize().padding(16.dp)) {
         Text("Laporan", style = MaterialTheme.typography.headlineMedium)
         Spacer(Modifier.height(12.dp))
@@ -248,7 +224,7 @@ fun ReportsScreen(vm: MainViewModel, role: String) {
             Text("Laporan profit disembunyikan untuk role ini.")
         }
         Spacer(Modifier.height(12.dp))
-        Text("Total penjualan: Rp${vm.totalSalesValue()}")
+        Text("Total penjualan hari ini: Rp$salesTotal")
     }
 }
 

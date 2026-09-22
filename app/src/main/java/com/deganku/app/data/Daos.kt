@@ -80,6 +80,9 @@ interface SaleDao {
     @Query("SELECT COALESCE(SUM(subtotal), 0) FROM sales WHERE cancelled = 0 AND createdAt BETWEEN :from AND :to")
     suspend fun revenue(from: Long, to: Long): Long
 
+    @Query("SELECT COALESCE(SUM(subtotal), 0) FROM sales WHERE cancelled = 0 AND createdAt >= :from")
+    suspend fun revenueFrom(from: Long): Long
+
     @Query("SELECT COUNT(*) FROM sales WHERE cancelled = 0 AND createdAt BETWEEN :from AND :to")
     suspend fun count(from: Long, to: Long): Int
 
